@@ -8,4 +8,4 @@ E:\GitHub\activate-windows-manager\obj\Debug\activate-windows-manager.csproj.Gen
 E:\GitHub\activate-windows-manager\obj\Debug\activate-windows-manager.csproj.CoreCompileInputs.cache
 E:\GitHub\activate-windows-manager\obj\Debug\activate-windows-manager.exe
 E:\GitHub\activate-windows-manager\obj\Debug\activate-windows-manager.pdb
-E:\GitHub\activate-windows-manager\bin\Debug\Resources\activate-windows-mingw64.exe
+E:\GitHub\activate-windows-manager\obj\Debug\activate_windows_manager.consoleForm.resources

@@ -35,6 +35,7 @@
             this.customArguments = new System.Windows.Forms.TextBox();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.helpButton = new System.Windows.Forms.Button();
+            this.consoleButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // startClick
@@ -84,11 +85,22 @@
             this.helpButton.UseVisualStyleBackColor = true;
             this.helpButton.Click += new System.EventHandler(this.helpButton_Click);
             // 
+            // consoleButton
+            // 
+            this.consoleButton.Location = new System.Drawing.Point(56, 231);
+            this.consoleButton.Name = "consoleButton";
+            this.consoleButton.Size = new System.Drawing.Size(103, 61);
+            this.consoleButton.TabIndex = 4;
+            this.consoleButton.Text = "显示日志";
+            this.consoleButton.UseVisualStyleBackColor = true;
+            this.consoleButton.Click += new System.EventHandler(this.consoleButton_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 14F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(526, 338);
+            this.Controls.Add(this.consoleButton);
             this.Controls.Add(this.helpButton);
             this.Controls.Add(this.customArguments);
             this.Controls.Add(this.stopClick);
@@ -101,6 +113,7 @@
             this.Name = "Form1";
             this.Text = "activate-windows";
             this.TopMost = true;
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -113,6 +126,7 @@
         private System.Windows.Forms.TextBox customArguments;
         private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.Button helpButton;
+        private System.Windows.Forms.Button consoleButton;
     }
 }
 

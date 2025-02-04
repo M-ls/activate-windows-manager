@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -13,9 +14,15 @@ namespace activate_windows_manager
         {
             InitializeComponent();
             miscell();
+            unpackFile();
             this.Resize += MyForm_Resize;
         }
-        string tips = "参数：\n-p: 预设参数（\"mac\"、\"bsd\"、\"linux\"、\"hurd\"、\"windows\"、\"unix\"、\"deck\"、\"reactos\"、\"m$\"）\n-t: 自定义标题行\n-m: 自定义内容行\n-b: 加粗\n-i: 斜体\n-f: 自定义字体\n-c: 自定义颜色\n-w: 自定义叠加层宽度\n-h: 自定义叠加层高度\n-s: 自定义缩放\n";
+
+        readonly string tips = "参数：\n-p: 预设参数（\"mac\"、\"bsd\"、\"linux\"、\"hurd\"、\"windows\"、\"unix\"、\"deck\"、\"reactos\"、\"m$\"）\n-t: 自定义标题行\n-m: 自定义内容行\n-b: 加粗\n-i: 斜体\n-f: 自定义字体\n-c: 自定义颜色\n-w: 自定义叠加层宽度\n-h: 自定义叠加层高度\n-s: 自定义缩放\n";
+        static readonly string resourceName = "activate_windows";
+        static readonly string resourcePath = "activate_windows_manager.Resources.activate_windows.exe";
+        static string tempExePath = Path.Combine(Path.GetTempPath(), resourceName + ".exe");
+
         private async void startClick_Click(object sender, EventArgs e)
         {
             await stableActivity("start", customArguments);
@@ -28,25 +35,37 @@ namespace activate_windows_manager
         {
             toolTip.Show(tips, helpButton, 5000);
         }
+        private void consoleButton_Click(object sender, EventArgs e)
+        {
+            new consoleForm().Show();
+        }
+        private void NotifyIcon_DoubleClick(object sender, EventArgs e)
+        {
+            ShowWindow(sender, e);
+        }
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            ExitApplication(sender, e);
+        }
         private void ShowWindow(object sender, EventArgs e)
         {
             this.Show();
             this.WindowState = FormWindowState.Normal;
             this.ShowInTaskbar = true;
         }
-        private void NotifyIcon_DoubleClick(object sender, EventArgs e)
-        {
-            ShowWindow(sender, e);
-        }
         private void ExitApplication(object sender, EventArgs e)
         {
+            if (File.Exists(tempExePath))
+            {
+                File.Delete(tempExePath);
+            }
             Application.Exit();
         }
         private void MyForm_Resize(object sender, EventArgs e)
         {
             if (this.WindowState == FormWindowState.Minimized)
             {
-                this.ShowInTaskbar = false; 
+                this.ShowInTaskbar = false;
                 this.Hide();
             }
         }
@@ -87,20 +106,42 @@ namespace activate_windows_manager
                 e.Graphics.DrawString(e.ToolTipText, font, Brushes.Black, e.Bounds);
             }
         }
-        static async Task stableActivity(string stable, TextBox customArguments)
+        static async void unpackFile()
         {
             try
             {
-                // 获取当前程序的运行目录
-                string exeDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                // 获取当前程序的程序集
+                Assembly assembly = Assembly.GetExecutingAssembly();
 
-                // 构建可执行文件的绝对路径
-                string exePath = Path.Combine(exeDirectory, "Resources", "activate-windows-mingw64.exe");
+                // 创建临时文件路径
+
+
+                // 将嵌入的资源文件解压到临时目录
+                using (Stream resourceStream = assembly.GetManifestResourceStream(resourcePath))
+                {
+                    if (resourceStream == null)
+                    {
+                        throw new Exception($"找不到嵌入的资源文件: {resourceName}");
+                    }
+
+                    using (FileStream fileStream = new FileStream(tempExePath, FileMode.Create, FileAccess.Write))
+                    {
+                        await resourceStream.CopyToAsync(fileStream); // 异步复制到临时文件
+                    }
+                }
+            }
+            catch { }
+        }
+        static async Task stableActivity(string stable, System.Windows.Forms.TextBox customArguments)
+        {
+            try
+            {
+
 
                 // 创建 ProcessStartInfo 对象
                 ProcessStartInfo processInfo = new ProcessStartInfo
                 {
-                    FileName = exePath,                                            // 可执行文件路径
+                    FileName = tempExePath,                                            // 可执行文件路径
                     Arguments = stable == "start" ? customArguments.Text : "-K",   // 传递给可执行文件的参数
                     RedirectStandardOutput = true,                                 // 重定向标准输出（可选）
                     RedirectStandardError = true,                                  // 重定向标准错误（可选）
